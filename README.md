@@ -1,6 +1,8 @@
 # 🌐 Mini-NET — Implementação de uma Pilha de Protocolos de Rede
 
 > Projeto Integrador — Disciplina: Redes de Computadores 2025/4  
+Professor: _Hugo Marciano de Melo_  
+Alunos: _João Gabriel Cavalcante França, Leonardo Moreira de Araújo, Vitor Martins Castanheira_
 
 ---
 
@@ -57,8 +59,6 @@ LATENCIA_MAX           = 0.5   # Atraso máximo (segundos)
 ---
 
 ## 🚀 Como Rodar — Fase a Fase
-
----
 
 ### Fase 1 — Aplicação e Sockets
 
