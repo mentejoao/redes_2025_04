@@ -60,30 +60,43 @@ LATENCIA_MAX           = 0.5   # Atraso máximo (segundos)
 
 ## 🚀 Como Rodar — Fase a Fase
 
-### Fase 1 — Aplicação e Sockets
+---
+
+### Fase 1 — Aplicação e Sockets (Cliente–Servidor)
 
 **O que foi implementado:**
-- Arquitetura **P2P** (peer-to-peer) com UDP
-- Formato **JSON** para as mensagens (`type`, `sender`, `message`, `timestamp`)
-- Thread dedicada para receber mensagens em paralelo ao envio
+- Arquitetura **Cliente-Servidor** sobre UDP
+- Servidor central responsável por:
+  - receber mensagens;
+  - registrar clientes automaticamente;
+  - redistribuir mensagens via **broadcast**
+- Formato de mensagem em **JSON** contendo:
+  - `type`
+  - `sender`
+  - `message`
+  - `timestamp`
+- Cliente com entrada interativa do usuário
+- Recepção e envio simultâneos utilizando **Threads**
+- Execução unificada em um único arquivo via modo de operação
 
 **Arquivos:** `phase_01.py`
 
-**Execução (2 ou mais terminais):**
+**Execução (3 terminais):**
 
 ```bash
-# Terminal 1
-python phase_01.py
-# Minha porta: 5001
-# Peers > 127.0.0.1:5002
-# Peers > (vazio para terminar)
+# Terminal 1 — Servidor
+python phase_01.py server
+
+# Terminal 2 — Cliente
+python phase_01.py client
+# Ex.:
+# Minha porta local: 5001
 # Seu nome: Alice
 
-# Terminal 2
-python phase_01.py
-# Minha porta: 5002
-# Peers > 127.0.0.1:5001
-# Peers > (vazio para terminar)
+# Terminal 3 — Cliente
+python phase_01.py client
+# Ex.:
+# Minha porta local: 5002
 # Seu nome: Bob
 ```
 
