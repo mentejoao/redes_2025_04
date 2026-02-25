@@ -59,20 +59,33 @@ def run_server():
             print("[ERRO] pacote inválido recebido")
             continue
 
-        # Registra cliente automaticamente
-        clientes.add(addr)
+        # Verifica o tipo de mensagem
+        msg_type = msg.get("type", "CHAT")
 
-        # Exibe mensagem no servidor
-        print(
-            f"[{msg['timestamp']}] "
-            f"{msg['sender']}@{addr[0]}:{addr[1]}: "
-            f"{msg['message']}"
-        )
+        if msg_type == "JOIN":
+            # Mensagem de registro - adiciona cliente
+            clientes.add(addr)
+            print(
+                f"[REGISTRO] {msg['sender']}@{addr[0]}:{addr[1]} "
+                f"entrou no chat"
+            )
+            # Não faz broadcast de mensagens JOIN
 
-        # Broadcast: envia para todos exceto remetente
-        for cliente in clientes:
-            if cliente != addr:
-                sock.sendto(data, cliente)
+        else:
+            # Registra cliente (caso ainda não esteja)
+            clientes.add(addr)
+
+            # Exibe mensagem no servidor
+            print(
+                f"[{msg['timestamp']}] "
+                f"{msg['sender']}@{addr[0]}:{addr[1]}: "
+                f"{msg['message']}"
+            )
+
+            # Broadcast: envia para todos exceto remetente
+            for cliente in clientes:
+                if cliente != addr:
+                    sock.sendto(data, cliente)
 
 
 # =====================================================
@@ -126,6 +139,21 @@ def run_client():
 
     # Inicia thread daemon (encerra junto com o programa)
     threading.Thread(target=listen, daemon=True).start()
+
+    # -------------------------------------------------
+    # HANDSHAKE: Envia mensagem JOIN para registro
+    # -------------------------------------------------
+    join_payload = {
+        "type": "JOIN",
+        "sender": NAME,
+        "message": "",
+        "timestamp": datetime.now().isoformat()
+    }
+    sock.sendto(
+        json.dumps(join_payload).encode(),
+        (SERVER_IP, SERVER_PORT)
+    )
+    print(f"[SISTEMA] Registrado no servidor como '{NAME}'")
 
     # -------------------------------------------------
     # LOOP DE ENVIO (THREAD PRINCIPAL)
