@@ -106,13 +106,26 @@ def run_client():
         2) Thread secundária → recepção
     """
 
-    MY_PORT = int(input("Minha porta local: "))
     NAME = input("Seu nome: ")
 
+    # Tenta vincular a porta com retry em caso de erro
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.bind(("127.0.0.1", MY_PORT))
-
-    print("[CLIENTE] Conectado ao servidor.")
+    
+    while True:
+        try:
+            MY_PORT = int(input("Minha porta local: "))
+            sock.bind(("127.0.0.1", MY_PORT))
+            print("[CLIENTE] Conectado ao servidor.")
+            break  # Sucesso, sai do loop
+        except OSError as e:
+            if e.errno == 98 or e.errno == 48:  # Address already in use (Linux/Mac)
+                print(f"[ERRO] Porta {MY_PORT} já está em uso. Tente outra porta.")
+            elif e.errno == 10048:  # Address already in use (Windows)
+                print(f"[ERRO] Porta {MY_PORT} já está em uso. Tente outra porta.")
+            else:
+                print(f"[ERRO] Não foi possível vincular à porta {MY_PORT}: {e}")
+        except ValueError:
+            print("[ERRO] Por favor, digite um número de porta válido.")
 
     # -------------------------------------------------
     # THREAD DE RECEPÇÃO
