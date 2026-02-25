@@ -143,8 +143,9 @@ def run_client():
                 msg = json.loads(data.decode())
 
                 print(
-                    f"\n[{msg['timestamp']}] "
-                    f"{msg['sender']}: {msg['message']}"
+                    f"\r\033[K[{msg['timestamp']}] "
+                    f"{msg['sender']}: {msg['message']}\n"
+                    f"Sua mensagem ({NAME}): ", end="", flush=True
                 )
 
             except json.JSONDecodeError:
@@ -172,14 +173,19 @@ def run_client():
     # LOOP DE ENVIO (THREAD PRINCIPAL)
     # -------------------------------------------------
     while True:
-        text = input()
+        text = input(f"Sua mensagem ({NAME}): ")
 
+        timestamp = datetime.now().isoformat()
+        
         payload = {
             "type": "CHAT",
             "sender": NAME,
             "message": text,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": timestamp
         }
+
+        # Exibe a própria mensagem formatada localmente
+        print(f"\033[A\r\033[K[{timestamp}] {NAME}: {text}")
 
         # Envia datagrama UDP ao servidor
         sock.sendto(
