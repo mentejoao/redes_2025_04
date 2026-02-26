@@ -87,26 +87,23 @@ python router.py
 
 # Terminal 2 — Servidor
 python server.py
-# Modo: server
-# IP do roteador: 127.0.0.1  |  Porta: 5000
 # Minha porta real: 5003
 # Meu VIP: SERVIDOR
+# IP do roteador: 127.0.0.1  |  Porta: 5000
 
 # Terminal 3 — Cliente A
 python client.py
-# Modo: client
-# IP do roteador: 127.0.0.1  |  Porta: 5000
 # Minha porta real: 5001
 # Meu VIP: HOST_A
+# IP do roteador: 127.0.0.1  |  Porta: 5000
 # VIP destino: SERVIDOR
 # Seu nome: Alice
 
 # Terminal 4 — Cliente B
 python client.py
-# Modo: client
-# IP do roteador: 127.0.0.1  |  Porta: 5000
 # Minha porta real: 5002
 # Meu VIP: HOST_B
+# IP do roteador: 127.0.0.1  |  Porta: 5000
 # VIP destino: SERVIDOR
 # Seu nome: Bob
 ```
