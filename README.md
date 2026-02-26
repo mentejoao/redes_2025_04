@@ -1,8 +1,8 @@
 # 🌐 Mini-NET — Implementação de uma Pilha de Protocolos de Rede
 
 > Projeto Integrador — Disciplina: Redes de Computadores 2025/4  
-Professor: _Hugo Marciano de Melo_  
-Alunos: _João Gabriel Cavalcante França, Leonardo Moreira de Araújo, Vitor Martins Castanheira_
+> Professor: _Hugo Marciano de Melo_  
+> Alunos: _João Gabriel Cavalcante França, Leonardo Moreira de Araújo, Vitor Martins Castanheira_
 
 ---
 
@@ -11,6 +11,31 @@ Alunos: _João Gabriel Cavalcante França, Leonardo Moreira de Araújo, Vitor Ma
 O **Mini-NET** é uma implementação didática de uma pilha de protocolos de rede inspirada no modelo OSI/TCP-IP. O objetivo é construir um **chat funcional sobre UDP** — um canal propositalmente não confiável — implementando via código todas as garantias de entrega, integridade, endereçamento e roteamento.
 
 O projeto é dividido em **4 fases incrementais**, cada uma adicionando uma nova camada de protocolo sobre a anterior.
+
+---
+
+## 📁 Estrutura do Repositório
+
+```
+mini-net/
+│
+├── final_phase/        ← ✅ VERSÃO FINAL — use estes arquivos para executar
+│   ├── client.py       #    Cliente com pilha completa (L7 → L2)
+│   ├── server.py       #    Servidor com pilha completa (L2 → L7)
+│   ├── router.py       #    Roteador intermediário (L2/L3)
+│   ├── protocol.py     #    Fornecido pelo professor — NÃO MODIFICAR
+│   └── README.md
+│
+├── phases/             ← 📚 Fases incrementais (apenas para referência)
+│   ├── phase_01.py     #    Fase 1: Aplicação (JSON + UDP + P2P)
+│   ├── phase_02.py     #    Fase 2: Transporte (Stop-and-Wait, ACK, Timeout)
+│   ├── phase_03.py     #    Fase 3: Rede (VIPs, TTL, Roteamento)
+│   └── phase_04.py     #    Fase 4: Enlace (MACs, CRC32) — equivalente ao final_phase
+│
+└── video/              ← 🎥 Vídeo de demonstração
+```
+
+> **Importante:** O diretório `final_phase/` contém a versão final e consolidada do projeto, separada em arquivos por papel (`client.py`, `server.py`, `router.py`), conforme exigido pelo professor. O diretório `phases/` existe apenas para evidenciar o raciocínio incremental de desenvolvimento — cada arquivo representa uma etapa da construção da pilha de protocolos.
 
 ---
 
@@ -41,164 +66,12 @@ O encapsulamento segue o modelo de "Bonecas Russas":
 [HOST_B] ──┘
 ```
 
---- 
-
-## 📡 Simulador de Canal Físico
-
-O arquivo `protocol.py` simula um meio físico ruidoso. Os parâmetros podem ser ajustados para os testes:
-
-```python
-PROBABILIDADE_PERDA    = 0.2   # 20% de chance de o pacote ser descartado
-PROBABILIDADE_CORRUPCAO = 0.2  # 20% de chance de corrupção de bits
-LATENCIA_MIN           = 0.1   # Atraso mínimo (segundos)
-LATENCIA_MAX           = 0.5   # Atraso máximo (segundos)
-```
-
-> 💡 **Dica para demonstração:** configure `PROBABILIDADE_PERDA = 0.5` e `PROBABILIDADE_CORRUPCAO = 0.5` para estressar o sistema e evidenciar as retransmissões nos logs.
-
 ---
 
-## 🚀 Como Rodar
+## 🚀 Como Rodar 
 
----
 
-### Fase 1 — Aplicação e Sockets (Cliente–Servidor)
-
-**O que foi implementado:**
-- Arquitetura **Cliente-Servidor** sobre UDP
-- Servidor central responsável por:
-  - receber mensagens;
-  - registrar clientes automaticamente;
-  - redistribuir mensagens via **broadcast**
-- Formato de mensagem em **JSON** contendo:
-  - `type`
-  - `sender`
-  - `message`
-  - `timestamp`
-- Cliente com entrada interativa do usuário
-- Recepção e envio simultâneos utilizando **Threads**
-- Execução unificada em um único arquivo via modo de operação
-
-**Arquivos:** `phase_01.py`
-
-**Execução (3 terminais):**
-
-```bash
-# Terminal 1 — Servidor
-python phase_01.py server
-
-# Terminal 2 — Cliente
-python phase_01.py client
-# Ex.:
-# Minha porta local: 5001
-# Seu nome: Alice
-
-# Terminal 3 — Cliente
-python phase_01.py client
-# Ex.:
-# Minha porta local: 5002
-# Seu nome: Bob
-```
-
----
-
-### Fase 2 — Transporte (Stop-and-Wait)
-
-**O que foi implementado:**
-- Migração para **arquitetura Cliente-Servidor**
-- Protocolo **Stop-and-Wait**: o cliente trava até receber confirmação antes de enviar a próxima mensagem
-- **ACKs**: o servidor confirma cada segmento recebido
-- **Timeout + Retransmissão**: se o ACK não chegar em 2s, o cliente retransmite automaticamente
-- **Números de Sequência alternantes (0/1)**: o receptor detecta e descarta duplicatas
-
-**Arquivos:** `phase_02.py`
-
-**Execução (2 terminais):**
-
-```bash
-# Terminal 1 — Servidor
-python phase_02.py
-# Modo: server
-# Porta do servidor: 5000
-
-# Terminal 2 — Cliente
-python phase_02.py
-# Modo: client
-# IP do servidor: 127.0.0.1
-# Porta do servidor: 5000
-# Seu nome: Alice
-```
-
----
-
-### Fase 3 — Rede e Roteamento
-
-**O que foi implementado:**
-- **Endereços virtuais (VIPs):** `HOST_A`, `HOST_B`, `SERVIDOR`
-- **TTL (Time To Live):** pacotes com TTL ≤ 0 são descartados pelo roteador
-- **Roteador intermediário:** clientes nunca enviam diretamente ao servidor; todo tráfego passa pelo roteador
-- **Tabela de roteamento estática:** configurada na inicialização do `router.py`
-- **ACK retorna pelo roteador:** o caminho de volta também passa pelas camadas de rede
-
-**Arquivos:** `phase_03.py` + `router.py`
-
-**Execução (4 terminais):**
-
-```bash
-# Terminal 1 — Roteador (iniciar primeiro)
-python router.py
-# Porta do roteador: 5000
-# Rota> SERVIDOR 127.0.0.1 5003
-# Rota> HOST_A 127.0.0.1 5001
-# Rota> HOST_B 127.0.0.1 5002
-# Rota> (vazio para confirmar)
-
-# Terminal 2 — Servidor
-python phase_03.py
-# Modo: server
-# IP do roteador: 127.0.0.1  |  Porta: 5000
-# Minha porta real: 5003
-# Meu VIP: SERVIDOR
-
-# Terminal 3 — Cliente A
-python phase_03.py
-# Modo: client
-# IP do roteador: 127.0.0.1  |  Porta: 5000
-# Minha porta real: 5001
-# Meu VIP: HOST_A
-# VIP destino: SERVIDOR
-# Seu nome: Alice
-
-# Terminal 4 — Cliente B
-python phase_03.py
-# Modo: client
-# IP do roteador: 127.0.0.1  |  Porta: 5000
-# Minha porta real: 5002
-# Meu VIP: HOST_B
-# VIP destino: SERVIDOR
-# Seu nome: Bob
-```
-
----
-
-### Fase 4 — Enlace e Integridade (Pilha Completa)
-
-**O que foi implementado:**
-- **Endereços MAC fictícios** para cada nó da rede:
-
-  | VIP       | MAC                 |
-  |-----------|---------------------|
-  | HOST_A    | AA:AA:AA:AA:AA:01   |
-  | HOST_B    | BB:BB:BB:BB:BB:02   |
-  | SERVIDOR  | CC:CC:CC:CC:CC:03   |
-  | ROTEADOR  | DD:DD:DD:DD:DD:04   |
-
-- **CRC32 (FCS):** calculado e embutido no Quadro antes do envio via `Quadro.serializar()`
-- **Verificação de integridade:** ao receber, `Quadro.deserializar()` recalcula o CRC; divergência → descarte silencioso
-- **Re-encapsulamento no Roteador:** o roteador consome o quadro antigo, atualiza MACs e TTL, e gera um novo quadro com CRC recalculado para o próximo salto
-- **Recuperação transparente:** a Camada de Transporte (Fase 2) cobre as perdas por CRC via timeout + retransmissão
-
-**Arquivos:** `client.py`, `server.py`, `router.py`, `protocol.py`
+**Arquivos:** `router.py` + `server.py` + `client.py`
 
 **Execução (4 terminais):**
 
@@ -213,26 +86,31 @@ python router.py
 
 # Terminal 2 — Servidor
 python server.py
+# Modo: server
+# IP do roteador: 127.0.0.1  |  Porta: 5000
 # Minha porta real: 5003
 # Meu VIP: SERVIDOR
-# IP do roteador: 127.0.0.1  |  Porta: 5000
 
 # Terminal 3 — Cliente A
 python client.py
+# Modo: client
+# IP do roteador: 127.0.0.1  |  Porta: 5000
 # Minha porta real: 5001
 # Meu VIP: HOST_A
-# IP do roteador: 127.0.0.1  |  Porta: 5000
 # VIP destino: SERVIDOR
 # Seu nome: Alice
 
 # Terminal 4 — Cliente B
 python client.py
+# Modo: client
+# IP do roteador: 127.0.0.1  |  Porta: 5000
 # Minha porta real: 5002
 # Meu VIP: HOST_B
-# IP do roteador: 127.0.0.1  |  Porta: 5000
 # VIP destino: SERVIDOR
 # Seu nome: Bob
 ```
+
+---
 
 ## 🎨 Legenda dos Logs
 
