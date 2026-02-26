@@ -11,6 +11,7 @@
 O **Mini-NET** é uma implementação didática de uma pilha de protocolos de rede inspirada no modelo OSI/TCP-IP. O objetivo é construir um **chat funcional sobre UDP** — um canal propositalmente não confiável — implementando via código todas as garantias de entrega, integridade, endereçamento e roteamento.
 
 O projeto é dividido em **4 fases incrementais**, cada uma adicionando uma nova camada de protocolo sobre a anterior.
+Até chegarmos ao modelo final que será executado, e está em **/final_phase**
 
 ---
 
