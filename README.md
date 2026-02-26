@@ -22,13 +22,13 @@ O encapsulamento segue o modelo de "Bonecas Russas":
 ┌──────────────────────────────────────────────┐
 │  QUADRO (Enlace — L2)                        │
 │  ┌────────────────────────────────────────┐  │
-│  │  PACOTE (Rede — L3)                   │  │
-│  │  ┌──────────────────────────────────┐ │  │
-│  │  │  SEGMENTO (Transporte — L4)      │ │  │
-│  │  │  ┌────────────────────────────┐  │ │  │
-│  │  │  │  JSON (Aplicação — L7)     │  │ │  │
-│  │  │  └────────────────────────────┘  │ │  │
-│  │  └──────────────────────────────────┘ │  │
+│  │  PACOTE (Rede — L3)                    │  │
+│  │  ┌──────────────────────────────────┐  │  │
+│  │  │  SEGMENTO (Transporte — L4)      │  │  │
+│  │  │  ┌────────────────────────────┐  │  │  │
+│  │  │  │  JSON (Aplicação — L7)     │  │  │  │
+│  │  │  └────────────────────────────┘  │  │  │
+│  │  └──────────────────────────────────┘  │  │
 │  └────────────────────────────────────────┘  │
 └──────────────────────────────────────────────┘
 ```
@@ -58,7 +58,7 @@ LATENCIA_MAX           = 0.5   # Atraso máximo (segundos)
 
 ---
 
-## 🚀 Como Rodar — Fase a Fase
+## 🚀 Como Rodar
 
 ---
 
@@ -198,9 +198,9 @@ python phase_03.py
 - **Re-encapsulamento no Roteador:** o roteador consome o quadro antigo, atualiza MACs e TTL, e gera um novo quadro com CRC recalculado para o próximo salto
 - **Recuperação transparente:** a Camada de Transporte (Fase 2) cobre as perdas por CRC via timeout + retransmissão
 
-**Arquivos:** `phase_04.py` + `router.py`
+**Arquivos:** `client.py`, `server.py`, `router.py`, `protocol.py`
 
-**Execução (4 terminais — mesma configuração da Fase 3):**
+**Execução (4 terminais):**
 
 ```bash
 # Terminal 1 — Roteador (iniciar primeiro)
@@ -212,32 +212,27 @@ python router.py
 # Rota> (vazio para confirmar)
 
 # Terminal 2 — Servidor
-python phase_04.py
-# Modo: server
-# IP do roteador: 127.0.0.1  |  Porta: 5000
+python server.py
 # Minha porta real: 5003
 # Meu VIP: SERVIDOR
+# IP do roteador: 127.0.0.1  |  Porta: 5000
 
 # Terminal 3 — Cliente A
-python phase_04.py
-# Modo: client
-# IP do roteador: 127.0.0.1  |  Porta: 5000
+python client.py
 # Minha porta real: 5001
 # Meu VIP: HOST_A
+# IP do roteador: 127.0.0.1  |  Porta: 5000
 # VIP destino: SERVIDOR
 # Seu nome: Alice
 
 # Terminal 4 — Cliente B
-python phase_04.py
-# Modo: client
-# IP do roteador: 127.0.0.1  |  Porta: 5000
+python client.py
 # Minha porta real: 5002
 # Meu VIP: HOST_B
+# IP do roteador: 127.0.0.1  |  Porta: 5000
 # VIP destino: SERVIDOR
 # Seu nome: Bob
 ```
-
----
 
 ## 🎨 Legenda dos Logs
 
