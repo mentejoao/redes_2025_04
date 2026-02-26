@@ -19,7 +19,7 @@ import socket
 PROBABILIDADE_PERDA = 0.2  # 20%
 
 # Chance de um pacote sofrer corrupção de bits (0.0 a 1.0)
-PROBABILIDADE_CORRUPCAO = 0.5 # 20%
+PROBABILIDADE_CORRUPCAO = 0.2 # 20%
 
 # Tempo de atraso simulado na rede (latência)
 LATENCIA_MIN = 0.1
